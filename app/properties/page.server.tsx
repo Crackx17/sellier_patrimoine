@@ -1,5 +1,6 @@
 import { fetchProperties, mapApimoToProperty } from "@/services/apimoService";
-import PropertyList from "./page";
+import PropertyList from "./PropertyList";
+
 
 export default async function PropertiesPage() {
   try {

@@ -1,124 +1,120 @@
 // app/properties/[id]/page.tsx
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { fetchProperties, mapApimoToProperty } from "@/services/apimoService";
+import { fetchProperties } from "@/services/apimoService";
+import { mapApimoToProperty } from "@/lib/mapApimoToProperty";
 import {
-  Bed, Bath, Square, MapPin, Calendar, Home, CheckCircle, Ruler, Wallet, ShieldCheck
+  Bed,
+  Bath,
+  Square,
+  MapPin,
+  Calendar,
+  Home,
+  // D'autres icônes si besoin
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import PropertyContactForm from "@/components/property/PropertyContactForm";
 import PropertyImageGallery from "@/components/property/PropertyImageGallery";
 
 export default async function PropertyDetail({ params }: { params: { id: string } }) {
-  const id = params?.id;
+  // Récupération de l'ID depuis les paramètres dynamiques
+  const { id } = await Promise.resolve(params);
   const properties = await fetchProperties();
   const property = properties.find((p: any) => p.id?.toString() === id);
-
   if (!property) notFound();
+
+  // Transformation des données via le mapping
   const mappedProperty = mapApimoToProperty(property);
 
   return (
-    <main className="container mx-auto px-6 pt-24 pb-10">
-      {/* 🔄 Galerie d'images */}
-      <PropertyImageGallery images={property.pictures?.map((pic: any) => pic.url) || [mappedProperty.imageUrl]} />
+    <main className="container mx-auto px-4 sm:px-6 md:px-8 pt-24 pb-10">
+      {/* Galerie d'images */}
+      <PropertyImageGallery
+        images={property.pictures?.map((pic: any) => pic.url) || [mappedProperty.imageUrl]}
+      />
 
-      {/* 📊 Détails du bien */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2">
-          <h1 className="text-3xl font-bold mb-2">{mappedProperty.title}</h1>
-          <div className="flex items-center text-gray-500 mb-4">
-            <MapPin className="h-4 w-4 mr-1" /> {mappedProperty.location} - {property.district?.name || "Quartier inconnu"}
-          </div>
-          <p className="text-2xl font-bold text-primary">
-            {mappedProperty.price.toLocaleString("fr-FR")} €
-          </p>
-
-          {/* 📏 Caractéristiques */}
-          <div className="flex flex-wrap gap-4 my-6">
-            <div className="flex items-center">
-              <Bed className="h-5 w-5 text-primary mr-2" />
-              {mappedProperty.bedrooms} chambres
-            </div>
-            <div className="flex items-center">
-              <Bath className="h-5 w-5 text-primary mr-2" />
-              {mappedProperty.bathrooms} salles de bain
-            </div>
-            <div className="flex items-center">
-              <Square className="h-5 w-5 text-primary mr-2" />
-              {mappedProperty.area} m²
-            </div>
-            {property.construction?.construction_year && (
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-primary mr-2" />
-                Construite en {property.construction.construction_year}
-              </div>
-            )}
-            {property.propertyType && (
-              <div className="flex items-center">
-                <Home className="h-5 w-5 text-primary mr-2" />
-                {property.propertyType}
-              </div>
-            )}
-          </div>
-
-          {/* 💰 Informations financières */}
-          {(property.price.commission || property.residence?.fees) && (
-            <>
-              <h2 className="text-xl font-semibold mb-2">Informations financières</h2>
-              <ul className="list-disc pl-5 text-gray-700">
-                {property.price.commission && <li>Honoraires : {property.price.commission} €</li>}
-                {property.residence?.fees && <li>Charges copropriété : {property.residence.fees} €/mois</li>}
-                {property.price.deposit && <li>Caution : {property.price.deposit} €</li>}
-              </ul>
-            </>
-          )}
-
-          {/* 🏗️ Services et équipements */}
-          {property.services?.length > 0 && (
-            <>
-              <h2 className="text-xl font-semibold mt-6 mb-2">Services & Équipements</h2>
-              <ul className="grid grid-cols-2 gap-4">
-                {property.services.map((service: string, index: number) => (
-                  <li key={index} className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-primary mr-2" />
-                    {service}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {/* 🔍 Diagnostics et réglementations */}
-          {property.regulations?.length > 0 && (
-            <>
-              <h2 className="text-xl font-semibold mt-6 mb-2">Diagnostics & Réglementations</h2>
-              <ul className="list-disc pl-5 text-gray-700">
-                {property.regulations.map((regulation: any, index: number) => (
-                  <li key={index}>
-                    <ShieldCheck className="h-5 w-5 text-primary mr-2 inline" />
-                    {regulation.type} : {regulation.value} ({regulation.date})
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {/* 🏡 Description */}
-          <h2 className="text-xl font-semibold mt-6 mb-2">Description</h2>
-          <p className="text-gray-700">
-            {property.comments?.[0]?.comment || "Aucune description disponible."}
-          </p>
+      {/* Informations de base */}
+      <section className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">{mappedProperty.title}</h1>
+        <div className="flex items-center text-gray-500 mb-2">
+          <MapPin className="h-4 w-4 mr-1" />
+          {mappedProperty.location} {property.district?.name ? `- ${property.district.name}` : ""}
         </div>
+        <p className="text-2xl font-bold text-primary">
+          {mappedProperty.price.toLocaleString("fr-FR")} €
+        </p>
+      </section>
 
-        {/* 📩 Formulaire de contact */}
-        <div>
-          <Card className="sticky top-28">
-            <CardContent className="p-6">
-              <PropertyContactForm propertyId={mappedProperty.id} />
-            </CardContent>
-          </Card>
+      {/* Caractéristiques et infos spécifiques (profil dynamique) */}
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Caractéristiques</h2>
+        <div className="flex flex-wrap gap-4">
+          <div className="flex items-center">
+            <Bed className="h-5 w-5 text-primary mr-2" />
+            {mappedProperty.bedrooms} chambres
+          </div>
+          <div className="flex items-center">
+            <Bath className="h-5 w-5 text-primary mr-2" />
+            {mappedProperty.bathrooms} salles de bain
+          </div>
+          <div className="flex items-center">
+            <Square className="h-5 w-5 text-primary mr-2" />
+            {mappedProperty.area} m²
+          </div>
+          {/* Affichage conditionnel pour un appartement */}
+          {mappedProperty.propertyType === "Appartement" && mappedProperty.floor && (
+            <div className="flex items-center">
+              <Calendar className="h-5 w-5 text-primary mr-2" />
+              Étage : {mappedProperty.floor}
+            </div>
+          )}
+          {/* Exemple d'info pour une maison */}
+          {mappedProperty.propertyType === "Maison" && mappedProperty.constructionYear && (
+            <div className="flex items-center">
+              <Calendar className="h-5 w-5 text-primary mr-2" />
+              Année de construction : {mappedProperty.constructionYear}
+            </div>
+          )}
+          {/* Vous pouvez ajouter d'autres conditions pour d'autres profils */}
         </div>
-      </div>
+      </section>
+
+      {/* Informations complémentaires */}
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Informations complémentaires</h2>
+        <div className="space-y-4 text-gray-700">
+          {mappedProperty.address && (
+            <div>
+              <span className="font-semibold">Adresse : </span>
+              {mappedProperty.address}
+              {mappedProperty.addressMore && `, ${mappedProperty.addressMore}`}
+            </div>
+          )}
+          {mappedProperty.district && (
+            <div>
+              <span className="font-semibold">Quartier : </span>
+              {mappedProperty.district}
+            </div>
+          )}
+          {/* Ajoutez d'autres champs complémentaires selon vos besoins */}
+        </div>
+      </section>
+
+      {/* Description */}
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Description</h2>
+        <p className="text-gray-700 leading-relaxed">
+          {property.comments?.[0]?.comment || "Aucune description disponible."}
+        </p>
+      </section>
+
+      {/* Formulaire de contact */}
+      <aside className="mb-8">
+        <Card className="shadow">
+          <CardContent className="p-6">
+            <PropertyContactForm propertyId={mappedProperty.id} />
+          </CardContent>
+        </Card>
+      </aside>
     </main>
   );
 }

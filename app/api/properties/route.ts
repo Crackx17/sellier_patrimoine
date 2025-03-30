@@ -19,7 +19,6 @@ export async function GET() {
     })
 
     const text = await res.text()
-    console.log('📥 API RESPONSE BODY:', text)
 
     if (!res.ok) {
       console.error('❌ Apimo API error:', res.status, res.statusText)
@@ -27,7 +26,6 @@ export async function GET() {
     }
 
     const data = JSON.parse(text)
-    console.log('✅ Parsed Apimo data:', data)
 
     return NextResponse.json(data)
   } catch (err) {
