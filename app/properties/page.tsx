@@ -1,12 +1,18 @@
-import { fetchProperties, mapApimoToProperty } from "@/services/apimoService";
-import PropertyList from "./PropertyList"; // Adjust path if needed
+// app/properties/page.tsx
+import { fetchProperties } from "@/services/apimoService";
+import { mapApimoToProperty } from "@/lib/mapApimoToProperty";
+import PropertyList from "./PropertyList";
+import { IProperty } from "@/components/property/PropertyCard";
 
 export default async function PropertiesPage() {
-  let initialProperties = [];
+  let initialProperties: IProperty[] = [];
 
   try {
     const apimoProperties = await fetchProperties();
-    initialProperties = apimoProperties.map(mapApimoToProperty);
+    // On mappe puis on filtre les valeurs null
+    initialProperties = apimoProperties
+      .map(mapApimoToProperty)
+      .filter((prop): prop is IProperty => prop !== null);
   } catch (error) {
     console.error("❌ Erreur de récupération des propriétés:", error);
   }

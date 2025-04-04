@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Property } from '@/components/property/PropertyCard';
+import { IProperty } from '@/components/property/PropertyCard';
 import PropertyCard from '@/components/property/PropertyCard';
 import { Button } from '@/components/ui/button';
 import FadeIn from '@/components/animations/FadeIn';
 
 interface PropertyGridProps {
-  properties: Property[];
+  properties: IProperty[];
   loading: boolean;
   resetFilters: () => void;
 }

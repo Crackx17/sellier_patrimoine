@@ -6,11 +6,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyGrid from "@/components/property/PropertyGrid";
 import PropertyListFilters from "@/components/property/PropertyListFilters";
-import { Property } from "@/components/property/PropertyCard"; // Assurez-vous d'avoir un type Property cohérent
+import { IProperty } from "@/components/property/PropertyCard"; // Assurez-vous d'avoir un type Property cohérent
 import { useRouter } from "next/navigation";
 
 interface PropertyListProps {
-  initialProperties: Property[];
+  initialProperties: IProperty[];
 }
 
 const PropertyList: React.FC<PropertyListProps> = ({ initialProperties }) => {

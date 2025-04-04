@@ -8,12 +8,21 @@ import Testimonials from '@/components/home/Testimonials';
 import CallToAction from '@/components/home/CallToAction';
 import Footer from '@/components/Footer';
 import FadeIn from '@/components/animations/FadeIn';
+import ChatbotIA from '@/components/ChatbotIA'; // Composant client pour le chatbot IA
 
 const Index: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative">
       <Navbar />
       <HeroSection />
+      
+      {/* Section Chatbot IA intégrée */}
+      <div className="container mx-auto px-4 mt-8">
+        <FadeIn delay={100}>
+          <ChatbotIA />
+        </FadeIn>
+      </div>
+      
       <FadeIn>
         <FeaturedPropertiesServer />
       </FadeIn>
